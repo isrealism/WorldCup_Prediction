@@ -1,0 +1,22 @@
+scikit-learn
+xgboost
+numpy
+matplotlib
+seaborn
+
+# 核心
+pandas>=2.0
+pyarrow>=14.0          # parquet 支持
+ 
+# datafc (Sofascore)
+datafc>=2.0.0
+ 
+# StatsBomb
+statsbombpy>=1.0
+ 
+# 外部 API & 爬虫
+requests>=2.31
+beautifulsoup4>=4.12
+ 
+# 可选：加速 HTML 解析
+lxml>=5.0
