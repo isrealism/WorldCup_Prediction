@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Clock, Trophy, Calendar } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Trophy, MapPin } from "lucide-react";
 
 interface CountdownProps {
   targetDate: Date;
@@ -36,43 +36,48 @@ export function Countdown({ targetDate, currentStage = "Pre-Tournament" }: Count
   }, [targetDate]);
 
   return (
-    <Card className="bg-gradient-to-br from-primary/10 via-card to-card border-primary/20">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-primary" />
-            <CardTitle>FIFA World Cup 2026</CardTitle>
-          </div>
-          <div className="flex items-center gap-2 rounded-full bg-primary-muted px-3 py-1 text-sm font-medium text-primary">
-            <Calendar className="h-4 w-4" />
-            {currentStage}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-2 text-foreground-muted mb-4">
-          <Clock className="h-4 w-4" />
-          <span className="text-sm">Until kickoff</span>
-        </div>
-        <div className="grid grid-cols-4 gap-4">
-          {[
-            { value: timeLeft.days, label: "Days" },
-            { value: timeLeft.hours, label: "Hours" },
-            { value: timeLeft.minutes, label: "Minutes" },
-            { value: timeLeft.seconds, label: "Seconds" },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="flex flex-col items-center rounded-lg bg-background-secondary p-4"
-            >
-              <span className="text-3xl font-bold tabular-nums text-foreground">
-                {item.value.toString().padStart(2, "0")}
-              </span>
-              <span className="text-xs text-foreground-muted">{item.label}</span>
+    <Card className="overflow-hidden border-0 bg-gradient-to-r from-primary to-emerald-600 text-white shadow-lg">
+      <div className="px-5 py-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Left side - Event info */}
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur">
+              <Trophy className="h-6 w-6" />
             </div>
-          ))}
+            <div>
+              <h2 className="text-lg font-bold">FIFA World Cup 2026</h2>
+              <div className="flex items-center gap-2 text-sm text-white/80">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>USA, Canada, Mexico</span>
+                <span className="mx-1">|</span>
+                <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">
+                  {currentStage}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side - Countdown */}
+          <div className="flex items-center gap-3">
+            {[
+              { value: timeLeft.days, label: "Days" },
+              { value: timeLeft.hours, label: "Hrs" },
+              { value: timeLeft.minutes, label: "Min" },
+              { value: timeLeft.seconds, label: "Sec" },
+            ].map((item, idx) => (
+              <div key={item.label} className="flex items-center gap-3">
+                <div className="flex flex-col items-center">
+                  <span className="text-2xl sm:text-3xl font-bold tabular-nums">
+                    {item.value.toString().padStart(2, "0")}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider text-white/70">{item.label}</span>
+                </div>
+                {idx < 3 && <span className="text-2xl font-light text-white/40">:</span>}
+              </div>
+            ))}
+          </div>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }

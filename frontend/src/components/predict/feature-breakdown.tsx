@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus } from "lucide-react";
 
 export interface FeatureImportance {
   name: string;
@@ -18,22 +18,22 @@ interface FeatureBreakdownProps {
   className?: string;
 }
 
-const categoryColors: Record<string, { bg: string; text: string }> = {
-  form: { bg: "bg-europe/20", text: "text-europe" },
-  h2h: { bg: "bg-south-america/20", text: "text-south-america" },
-  squad: { bg: "bg-asia/20", text: "text-asia" },
-  xg: { bg: "bg-africa/20", text: "text-africa" },
-  external: { bg: "bg-north-america/20", text: "text-north-america" },
-  elo: { bg: "bg-oceania/20", text: "text-oceania" },
+const categoryColors: Record<string, { bg: string; text: string; dot: string }> = {
+  form: { bg: "bg-europe/10", text: "text-europe", dot: "bg-europe" },
+  h2h: { bg: "bg-south-america/10", text: "text-south-america", dot: "bg-south-america" },
+  squad: { bg: "bg-asia/10", text: "text-asia", dot: "bg-asia" },
+  xg: { bg: "bg-africa/10", text: "text-africa", dot: "bg-africa" },
+  external: { bg: "bg-north-america/10", text: "text-north-america", dot: "bg-north-america" },
+  elo: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary" },
 };
 
 const categoryLabels: Record<string, string> = {
   form: "Form",
   h2h: "H2H",
   squad: "Squad",
-  xg: "xG Stats",
+  xg: "xG",
   external: "External",
-  elo: "Elo Rating",
+  elo: "Elo",
 };
 
 export function FeatureBreakdown({
@@ -50,112 +50,66 @@ export function FeatureBreakdown({
   const getImpactIcon = (impact: string) => {
     switch (impact) {
       case "home":
-        return <TrendingUp className="h-4 w-4 text-win" />;
+        return <ArrowUp className="h-3 w-3 text-win" />;
       case "away":
-        return <TrendingDown className="h-4 w-4 text-loss" />;
+        return <ArrowDown className="h-3 w-3 text-loss" />;
       default:
-        return <Minus className="h-4 w-4 text-draw" />;
+        return <Minus className="h-3 w-3 text-foreground-subtle" />;
     }
   };
 
-  const getImpactLabel = (impact: string) => {
+  const getImpactColor = (impact: string) => {
     switch (impact) {
       case "home":
-        return `Favors ${homeTeam}`;
+        return "text-win";
       case "away":
-        return `Favors ${awayTeam}`;
+        return "text-loss";
       default:
-        return "Neutral";
+        return "text-foreground-subtle";
     }
   };
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn("space-y-2", className)}>
       {sortedFeatures.slice(0, 5).map((feature) => {
         const colors = categoryColors[feature.category];
         return (
           <div
             key={feature.name}
-            className="rounded-lg border border-border bg-card p-4"
+            className="flex items-center gap-3 rounded-lg bg-background-secondary p-3"
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-xs font-medium",
-                      colors?.bg,
-                      colors?.text
-                    )}
-                  >
-                    {categoryLabels[feature.category]}
-                  </span>
-                  <span className="text-sm font-medium">{feature.name}</span>
-                </div>
-                {feature.description && (
-                  <p className="text-xs text-foreground-muted">
-                    {feature.description}
-                  </p>
-                )}
+            {/* Category dot */}
+            <span className={cn("h-2 w-2 rounded-full flex-shrink-0", colors?.dot)} />
+            
+            {/* Feature info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium truncate">{feature.name}</span>
+                <span className={cn(
+                  "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                  colors?.bg, colors?.text
+                )}>
+                  {categoryLabels[feature.category]}
+                </span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div className="text-lg font-bold tabular-nums">
-                    {feature.value > 0 ? "+" : ""}
-                    {feature.value.toFixed(2)}
-                  </div>
-                  <div className="flex items-center justify-end gap-1 text-xs text-foreground-muted">
-                    {getImpactIcon(feature.impact)}
-                    <span>{getImpactLabel(feature.impact)}</span>
-                  </div>
-                </div>
-              </div>
+              {feature.description && (
+                <p className="text-xs text-foreground-muted truncate mt-0.5">
+                  {feature.description}
+                </p>
+              )}
             </div>
             
-            {/* Impact bar */}
-            <div className="mt-3 flex items-center gap-2">
-              <div className="flex-1 h-2 bg-background-secondary rounded-full overflow-hidden flex">
-                <div className="flex-1 flex justify-end">
-                  {feature.impact === "home" && (
-                    <div
-                      className="h-full bg-win rounded-r-full"
-                      style={{
-                        width: `${Math.min(100, Math.abs(feature.value) * 20)}%`,
-                      }}
-                    />
-                  )}
-                </div>
-                <div className="w-px bg-foreground-muted" />
-                <div className="flex-1">
-                  {feature.impact === "away" && (
-                    <div
-                      className="h-full bg-loss rounded-l-full"
-                      style={{
-                        width: `${Math.min(100, Math.abs(feature.value) * 20)}%`,
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
+            {/* Value */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {getImpactIcon(feature.impact)}
+              <span className={cn("text-sm font-semibold tabular-nums", getImpactColor(feature.impact))}>
+                {feature.value > 0 ? "+" : ""}
+                {feature.value.toFixed(1)}
+              </span>
             </div>
           </div>
         );
       })}
-
-      {/* Category Legend */}
-      <div className="flex flex-wrap gap-3 pt-2">
-        {Object.entries(categoryLabels).map(([key, label]) => {
-          const colors = categoryColors[key];
-          return (
-            <div key={key} className="flex items-center gap-1.5">
-              <span
-                className={cn("h-2.5 w-2.5 rounded-full", colors?.bg)}
-              />
-              <span className="text-xs text-foreground-muted">{label}</span>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -171,14 +125,14 @@ export function generateMockFeatures(
       value: 120,
       impact: "home",
       category: "elo",
-      description: `${homeTeam} has a higher Elo rating by 120 points`,
+      description: `${homeTeam} has a higher Elo rating`,
     },
     {
       name: "Recent Form (Last 5)",
       value: 0.8,
       impact: "home",
       category: "form",
-      description: `${homeTeam} won 4 of last 5 matches vs ${awayTeam}'s 2`,
+      description: `${homeTeam} won 4 of last 5 matches`,
     },
     {
       name: "xG Difference",
@@ -192,21 +146,14 @@ export function generateMockFeatures(
       value: -0.3,
       impact: "away",
       category: "h2h",
-      description: `${awayTeam} has won 3 of last 5 head-to-head matches`,
+      description: `${awayTeam} leads head-to-head`,
     },
     {
       name: "Squad Market Value",
       value: 0.65,
       impact: "home",
       category: "squad",
-      description: "Relative squad valuation comparison",
-    },
-    {
-      name: "Weather Conditions",
-      value: 0.1,
-      impact: "neutral",
-      category: "external",
-      description: "Minimal weather impact expected",
+      description: "Relative squad valuation",
     },
   ];
 }

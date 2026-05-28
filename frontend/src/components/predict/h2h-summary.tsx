@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { History, Trophy, Scale } from "lucide-react";
 import { getFlagEmoji } from "@/lib/mock-data";
 
 interface H2HRecord {
@@ -41,7 +40,7 @@ export function H2HSummary({
   const getResultColor = (record: H2HRecord) => {
     if (record.homeScore > record.awayScore) return "bg-win";
     if (record.homeScore < record.awayScore) return "bg-loss";
-    return "bg-draw";
+    return "bg-foreground-subtle";
   };
 
   const getResultLabel = (record: H2HRecord) => {
@@ -52,92 +51,59 @@ export function H2HSummary({
 
   return (
     <div className={cn("space-y-4", className)}>
-      {/* Overall Stats */}
-      <div className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <History className="h-5 w-5 mx-auto mb-2 text-foreground-muted" />
-          <div className="text-2xl font-bold">{totalMatches}</div>
-          <div className="text-xs text-foreground-muted">Total Matches</div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-4 gap-2 text-center">
+        <div className="rounded-lg bg-background-secondary p-2">
+          <div className="text-lg font-bold">{totalMatches}</div>
+          <div className="text-[10px] text-foreground-muted">Matches</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <div className="text-2xl mb-1">{getFlagEmoji(homeTeam.code)}</div>
-          <div className="text-2xl font-bold text-win">{homeWins}</div>
-          <div className="text-xs text-foreground-muted">{homeTeam.name} Wins</div>
+        <div className="rounded-lg bg-win/10 p-2">
+          <div className="text-lg font-bold text-win">{homeWins}</div>
+          <div className="text-[10px] text-foreground-muted">{homeTeam.code}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <Scale className="h-5 w-5 mx-auto mb-2 text-draw" />
-          <div className="text-2xl font-bold text-draw">{draws}</div>
-          <div className="text-xs text-foreground-muted">Draws</div>
+        <div className="rounded-lg bg-background-secondary p-2">
+          <div className="text-lg font-bold text-foreground-subtle">{draws}</div>
+          <div className="text-[10px] text-foreground-muted">Draws</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <div className="text-2xl mb-1">{getFlagEmoji(awayTeam.code)}</div>
-          <div className="text-2xl font-bold text-loss">{awayWins}</div>
-          <div className="text-xs text-foreground-muted">{awayTeam.name} Wins</div>
+        <div className="rounded-lg bg-loss/10 p-2">
+          <div className="text-lg font-bold text-loss">{awayWins}</div>
+          <div className="text-[10px] text-foreground-muted">{awayTeam.code}</div>
         </div>
       </div>
 
       {/* Win Rate Bar */}
-      <div className="rounded-lg border border-border bg-card p-4">
-        <div className="flex items-center justify-between mb-2 text-sm">
-          <span className="font-medium text-win">{homeTeam.name}</span>
-          <span className="text-foreground-muted">Draw</span>
-          <span className="font-medium text-loss">{awayTeam.name}</span>
+      <div>
+        <div className="flex h-2 w-full overflow-hidden rounded-full">
+          <div className="bg-win" style={{ width: `${homeWinRate * 100}%` }} />
+          <div className="bg-foreground-subtle/40" style={{ width: `${drawRate * 100}%` }} />
+          <div className="bg-loss" style={{ width: `${awayWinRate * 100}%` }} />
         </div>
-        <div className="flex h-4 w-full overflow-hidden rounded-full">
-          <div
-            className="bg-win transition-all"
-            style={{ width: `${homeWinRate * 100}%` }}
-          />
-          <div
-            className="bg-draw transition-all"
-            style={{ width: `${drawRate * 100}%` }}
-          />
-          <div
-            className="bg-loss transition-all"
-            style={{ width: `${awayWinRate * 100}%` }}
-          />
-        </div>
-        <div className="flex items-center justify-between mt-2 text-xs text-foreground-muted">
+        <div className="flex items-center justify-between mt-1 text-[10px] text-foreground-muted">
           <span>{(homeWinRate * 100).toFixed(0)}%</span>
           <span>{(drawRate * 100).toFixed(0)}%</span>
           <span>{(awayWinRate * 100).toFixed(0)}%</span>
         </div>
       </div>
 
-      {/* Recent Matches Timeline */}
-      <div className="rounded-lg border border-border bg-card p-4">
-        <h4 className="text-sm font-medium mb-4 flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-primary" />
-          Recent Encounters (from {homeTeam.name}&apos;s perspective)
+      {/* Recent Matches */}
+      <div>
+        <h4 className="text-xs font-medium text-foreground-muted uppercase tracking-wider mb-2">
+          Last 5 Encounters
         </h4>
         <div className="flex items-center justify-center gap-2">
           {recentMatches.slice(0, 5).map((match, index) => (
-            <div
-              key={index}
-              className="group relative flex flex-col items-center"
-            >
+            <div key={index} className="flex flex-col items-center">
               <div
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold text-white",
+                  "flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold text-white",
                   getResultColor(match)
                 )}
               >
                 {getResultLabel(match)}
               </div>
-              <span className="mt-1 text-xs text-foreground-muted">
+              <span className="mt-1 text-[10px] text-foreground-muted tabular-nums">
                 {match.homeScore}-{match.awayScore}
               </span>
-              {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-                <div className="bg-background-secondary border border-border rounded-lg px-3 py-2 text-xs whitespace-nowrap shadow-lg">
-                  <div className="font-semibold">{match.competition}</div>
-                  <div className="text-foreground-muted">{match.date}</div>
-                  <div>
-                    {match.homeTeam} {match.homeScore} - {match.awayScore}{" "}
-                    {match.awayTeam}
-                  </div>
-                </div>
-              </div>
             </div>
           ))}
         </div>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { mockTeamsWithStats, getFlagEmoji, continentColors } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
-import { Users, Search, Trophy } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 export default function TeamsPage() {
   // Group teams by continent
@@ -15,54 +15,53 @@ export default function TeamsPage() {
     {} as Record<string, typeof mockTeamsWithStats>
   );
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-          <Users className="h-8 w-8 text-primary" />
-          Teams
-        </h1>
-        <p className="mt-2 text-foreground-muted">
-          Browse all participating teams in the World Cup 2026
-        </p>
-      </div>
+  // Order continents
+  const continentOrder = ["Europe", "South America", "North America", "Asia", "Africa", "Oceania"];
+  const orderedContinents = continentOrder.filter(c => teamsByContinent[c]);
 
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
       {/* Teams by Continent */}
-      <div className="space-y-8">
-        {Object.entries(teamsByContinent).map(([continent, teams]) => {
+      <div className="space-y-6">
+        {orderedContinents.map((continent) => {
+          const teams = teamsByContinent[continent];
           const colors = continentColors[continent];
           return (
-            <Card key={continent}>
-              <CardHeader>
-                <CardTitle className={cn("flex items-center gap-2", colors?.text)}>
-                  <Trophy className="h-5 w-5" />
-                  {continent}
-                  <span className="text-sm font-normal text-foreground-muted ml-2">
-                    ({teams.length} teams)
-                  </span>
-                </CardTitle>
+            <Card key={continent} elevated>
+              <CardHeader className="flex flex-row items-center gap-2">
+                <span className={cn("h-3 w-3 rounded-full", colors?.bg)} />
+                <CardTitle>{continent}</CardTitle>
+                <span className="text-xs font-normal text-foreground-muted">
+                  {teams.length} teams
+                </span>
               </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <CardContent className="p-0">
+                <div className="grid divide-y divide-border sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-3">
                   {teams
                     .sort((a, b) => a.fifaRanking - b.fifaRanking)
-                    .map((team) => (
+                    .map((team, idx) => (
                       <Link
                         key={team.code}
                         href={`/team/${team.name.toLowerCase()}`}
-                        className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-all hover:border-border-hover hover:bg-card-hover"
+                        className={cn(
+                          "flex items-center gap-3 px-5 py-3 transition-colors hover:bg-background-secondary group",
+                          idx % 3 !== 2 && "lg:border-r lg:border-border",
+                          idx % 2 !== 1 && "sm:border-r sm:border-border lg:border-r-0",
+                          idx < teams.length - 3 && "lg:border-b lg:border-border",
+                          idx < teams.length - 2 && "sm:border-b sm:border-border lg:border-b-0"
+                        )}
                       >
-                        <span className="text-4xl">{getFlagEmoji(team.code)}</span>
+                        <span className="text-2xl">{getFlagEmoji(team.code)}</span>
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold truncate">{team.name}</div>
-                          <div className="flex items-center gap-3 text-sm text-foreground-muted">
-                            <span>#{team.fifaRanking} FIFA</span>
-                            <span className="text-primary font-medium">
+                          <div className="text-sm font-medium truncate">{team.name}</div>
+                          <div className="flex items-center gap-2 text-xs text-foreground-muted">
+                            <span>#{team.fifaRanking}</span>
+                            <span className="text-primary font-semibold">
                               {(team.winProbability * 100).toFixed(1)}%
                             </span>
                           </div>
                         </div>
+                        <ChevronRight className="h-4 w-4 text-foreground-subtle opacity-0 group-hover:opacity-100 transition-opacity" />
                       </Link>
                     ))}
                 </div>

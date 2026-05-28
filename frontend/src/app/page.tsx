@@ -12,29 +12,19 @@ import {
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Dashboard
-        </h1>
-        <p className="mt-2 text-foreground-muted">
-          AI-powered predictions for the FIFA World Cup 2026
-        </p>
-      </div>
-
-      {/* Countdown Section */}
-      <div className="mb-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
+      {/* Countdown Banner */}
+      <div className="mb-6">
         <Countdown targetDate={worldCupStartDate} currentStage="Pre-Tournament" />
       </div>
 
-      {/* Quick Predict Section */}
-      <div className="mb-8">
+      {/* Quick Predict */}
+      <div className="mb-6">
         <QuickPredict />
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Win Probability Chart - Takes 2 columns */}
         <div className="lg:col-span-2">
           <WinProbabilityChart teams={mockTeamsWithStats} />
@@ -47,7 +37,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Upcoming Matches Section */}
-      <div className="mt-8">
+      <div className="mt-6">
         <UpcomingMatches matches={mockUpcomingMatches} />
       </div>
     </div>

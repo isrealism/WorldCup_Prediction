@@ -14,6 +14,7 @@ import {
   Database,
   Menu,
   X,
+  Search,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -33,20 +34,20 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
+    <header className="sticky top-0 z-50 bg-card border-b border-border">
+      <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 lg:px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Trophy className="h-5 w-5 text-background" />
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+            <Trophy className="h-4.5 w-4.5 text-white" />
           </div>
-          <span className="text-lg font-semibold tracking-tight">
+          <span className="text-base font-bold tracking-tight text-foreground">
             WorldCup Predictor
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex lg:items-center lg:gap-1">
+        <div className="hidden lg:flex lg:items-center lg:gap-0.5">
           {navigation.slice(0, 6).map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -54,10 +55,10 @@ export function Navbar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                   isActive
-                    ? "bg-primary-muted text-primary"
-                    : "text-foreground-muted hover:bg-card hover:text-foreground"
+                    ? "bg-primary text-white"
+                    : "text-foreground-muted hover:bg-background-secondary hover:text-foreground"
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -67,32 +68,37 @@ export function Navbar() {
           })}
         </div>
 
-        {/* Status Indicator & Actions */}
-        <div className="hidden lg:flex lg:items-center lg:gap-4">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="h-2 w-2 rounded-full bg-success" />
-            <span className="text-foreground-muted">Data Updated</span>
+        {/* Search & Status */}
+        <div className="hidden lg:flex lg:items-center lg:gap-3">
+          <button className="flex items-center gap-2 rounded-lg bg-background-secondary px-3 py-1.5 text-sm text-foreground-muted transition-colors hover:bg-background-tertiary hover:text-foreground">
+            <Search className="h-4 w-4" />
+            <span>Search teams...</span>
+            <kbd className="ml-2 rounded bg-background-tertiary px-1.5 py-0.5 text-xs font-mono text-foreground-subtle">/</kbd>
+          </button>
+          <div className="flex items-center gap-1.5 text-sm">
+            <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            <span className="text-foreground-muted text-xs font-medium">Live</span>
           </div>
         </div>
 
         {/* Mobile menu button */}
         <button
           type="button"
-          className="lg:hidden rounded-lg p-2 text-foreground-muted hover:bg-card hover:text-foreground"
+          className="lg:hidden rounded-lg p-2 text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           ) : (
-            <Menu className="h-6 w-6" />
+            <Menu className="h-5 w-5" />
           )}
         </button>
       </nav>
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-border bg-background">
-          <div className="space-y-1 px-4 py-3">
+        <div className="lg:hidden border-t border-border bg-card">
+          <div className="space-y-0.5 px-3 py-2">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -101,13 +107,13 @@ export function Navbar() {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150",
                     isActive
-                      ? "bg-primary-muted text-primary"
-                      : "text-foreground-muted hover:bg-card hover:text-foreground"
+                      ? "bg-primary text-white"
+                      : "text-foreground-muted hover:bg-background-secondary hover:text-foreground"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-4.5 w-4.5" />
                   {item.name}
                 </Link>
               );

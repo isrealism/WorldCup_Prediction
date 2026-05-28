@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Play, Loader2, RotateCcw } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Play, Loader2, Clock } from "lucide-react";
 
 interface SimulationControlsProps {
   onSimulate: (iterations: number) => Promise<void>;
@@ -14,9 +15,9 @@ interface SimulationControlsProps {
 }
 
 const iterationOptions = [
-  { value: 10000, label: "10K", description: "Fast (~5s)" },
-  { value: 50000, label: "50K", description: "Balanced (~15s)" },
-  { value: 100000, label: "100K", description: "Precise (~30s)" },
+  { value: 10000, label: "10K" },
+  { value: 50000, label: "50K" },
+  { value: 100000, label: "100K" },
 ];
 
 export function SimulationControls({
@@ -33,86 +34,76 @@ export function SimulationControls({
   };
 
   return (
-    <div className={cn("rounded-xl border border-border bg-card p-6", className)}>
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <Card elevated className={cn("p-5", className)}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Iteration Selector */}
-        <div>
-          <label className="block text-sm font-medium text-foreground-muted mb-3">
-            Simulation Iterations
-          </label>
-          <div className="flex gap-2">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-medium text-foreground-muted uppercase tracking-wider">
+            Iterations
+          </span>
+          <div className="flex rounded-lg bg-background-secondary p-0.5">
             {iterationOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setSelectedIterations(option.value)}
                 disabled={isSimulating}
                 className={cn(
-                  "rounded-lg px-4 py-3 text-center transition-colors",
+                  "rounded-md px-3 py-1 text-sm font-medium transition-all",
                   selectedIterations === option.value
-                    ? "bg-primary text-background"
-                    : "border border-border bg-background-secondary text-foreground hover:bg-card-hover",
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-foreground-muted hover:text-foreground",
                   isSimulating && "opacity-50 cursor-not-allowed"
                 )}
               >
-                <div className="text-lg font-bold">{option.label}</div>
-                <div className="text-xs opacity-70">{option.description}</div>
+                {option.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-3 lg:items-end">
-          <Button
-            onClick={handleSimulate}
-            disabled={isSimulating}
-            size="lg"
-            className="w-full lg:w-auto"
-          >
+        {/* Action */}
+        <div className="flex items-center gap-3">
+          {lastSimulationTime && !isSimulating && (
+            <div className="flex items-center gap-1.5 text-xs text-foreground-muted">
+              <Clock className="h-3.5 w-3.5" />
+              {lastSimulationTime}
+            </div>
+          )}
+          <Button onClick={handleSimulate} disabled={isSimulating}>
             {isSimulating ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Simulating...
               </>
             ) : (
               <>
-                <Play className="h-5 w-5" />
+                <Play className="h-4 w-4" />
                 Run Simulation
               </>
             )}
           </Button>
-          
-          {lastSimulationTime && (
-            <div className="flex items-center gap-2 text-xs text-foreground-muted">
-              <RotateCcw className="h-3.5 w-3.5" />
-              Last run: {lastSimulationTime}
-            </div>
-          )}
         </div>
       </div>
 
       {/* Progress Bar */}
       {isSimulating && (
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-foreground-muted">
-              Running Monte Carlo simulation...
+        <div className="mt-4 pt-4 border-t border-border">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs text-foreground-muted">
+              Running {selectedIterations.toLocaleString()} simulations...
             </span>
-            <span className="text-sm font-medium tabular-nums">
+            <span className="text-xs font-medium tabular-nums">
               {progress.toFixed(0)}%
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-background-secondary">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-background-secondary">
             <div
-              className="h-full bg-primary transition-all duration-300"
+              className="h-full bg-primary transition-all duration-300 rounded-full"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="mt-2 text-xs text-foreground-muted">
-            Simulating {selectedIterations.toLocaleString()} tournament scenarios...
-          </p>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

@@ -8,11 +8,11 @@ import { GroupStageGrid } from "@/components/tournament/group-stage-grid";
 import { CompareView } from "@/components/tournament/compare-view";
 import { mockTeamsWithStats, Team } from "@/lib/mock-data";
 import { Trophy, Users, LineChart, Layers } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Generate mock simulation data
 function generateMockSimulationData(): TeamProbabilities[] {
   return mockTeamsWithStats.map((team) => {
-    // Generate decreasing probabilities through stages
     const groupStage = 0.85 + Math.random() * 0.15;
     const roundOf16 = groupStage * (0.6 + Math.random() * 0.35);
     const quarterFinals = roundOf16 * (0.5 + Math.random() * 0.4);
@@ -36,18 +36,10 @@ function generateMockSimulationData(): TeamProbabilities[] {
 function generateMockGroups() {
   const groups: { name: string; teams: { team: Team; qualifyProb: number; firstProb: number }[] }[] = [];
   const groupNames = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  
-  // Shuffle teams for distribution
   const shuffled = [...mockTeamsWithStats].sort(() => Math.random() - 0.5);
   
   for (let i = 0; i < 8; i++) {
     const groupTeams = shuffled.slice(i * 3, (i + 1) * 3);
-    // Add a fourth team if we have enough
-    if (shuffled.length > 24 && i < shuffled.length - 24) {
-      groupTeams.push(shuffled[24 + i] || shuffled[i]);
-    }
-    
-    // Add mock team if we don't have 4
     while (groupTeams.length < 4) {
       groupTeams.push(mockTeamsWithStats[groupTeams.length]);
     }
@@ -75,7 +67,6 @@ export default function TournamentPage() {
   const [lastSimulationTime, setLastSimulationTime] = useState<string | undefined>();
   const [activeTab, setActiveTab] = useState<TabType>("rankings");
 
-  // Initialize with mock data
   useEffect(() => {
     setSimulationData(generateMockSimulationData());
     setGroups(generateMockGroups());
@@ -86,7 +77,6 @@ export default function TournamentPage() {
     setIsSimulating(true);
     setProgress(0);
 
-    // Simulate progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -97,13 +87,11 @@ export default function TournamentPage() {
       });
     }, 200);
 
-    // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     clearInterval(interval);
     setProgress(100);
 
-    // Update with new "results"
     setSimulationData(generateMockSimulationData());
     setGroups(generateMockGroups());
     setLastSimulationTime("Just now");
@@ -116,25 +104,14 @@ export default function TournamentPage() {
 
   const tabs = [
     { id: "rankings", label: "Rankings", icon: Trophy },
-    { id: "groups", label: "Group Stage", icon: Layers },
+    { id: "groups", label: "Groups", icon: Layers },
     { id: "compare", label: "Compare", icon: LineChart },
   ];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-          <Trophy className="h-8 w-8 text-primary" />
-          Tournament Simulation
-        </h1>
-        <p className="mt-2 text-foreground-muted">
-          Monte Carlo simulation of the entire World Cup tournament
-        </p>
-      </div>
-
+    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
       {/* Simulation Controls */}
-      <div className="mb-8">
+      <div className="mb-6">
         <SimulationControls
           onSimulate={handleSimulate}
           isSimulating={isSimulating}
@@ -144,16 +121,17 @@ export default function TournamentPage() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="mb-6 flex gap-2 border-b border-border">
+      <div className="mb-6 flex gap-1 p-1 bg-background-secondary rounded-lg w-fit">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as TabType)}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
               activeTab === tab.id
-                ? "border-primary text-primary"
-                : "border-transparent text-foreground-muted hover:text-foreground"
-            }`}
+                ? "bg-card text-foreground shadow-sm"
+                : "text-foreground-muted hover:text-foreground"
+            )}
           >
             <tab.icon className="h-4 w-4" />
             {tab.label}
@@ -163,35 +141,27 @@ export default function TournamentPage() {
 
       {/* Tab Content */}
       {activeTab === "rankings" && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-primary" />
-                Championship Probability Rankings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <ProbabilityRankings teams={simulationData} />
-            </CardContent>
-          </Card>
-        </div>
+        <Card elevated>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Trophy className="h-4 w-4 text-primary" />
+            <CardTitle>Championship Probability</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ProbabilityRankings teams={simulationData} />
+          </CardContent>
+        </Card>
       )}
 
       {activeTab === "groups" && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Group Stage Qualification Probabilities
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <GroupStageGrid groups={groups} />
-            </CardContent>
-          </Card>
-        </div>
+        <Card elevated>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Users className="h-4 w-4 text-primary" />
+            <CardTitle>Group Stage Qualification</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <GroupStageGrid groups={groups} />
+          </CardContent>
+        </Card>
       )}
 
       {activeTab === "compare" && (

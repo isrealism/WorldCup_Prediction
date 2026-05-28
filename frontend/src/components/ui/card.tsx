@@ -5,14 +5,16 @@ import { cn } from "@/lib/utils";
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   hover?: boolean;
+  elevated?: boolean;
 }
 
-export function Card({ children, className, hover = false, ...props }: CardProps) {
+export function Card({ children, className, hover = false, elevated = false, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card p-6",
-        hover && "transition-colors hover:border-border-hover hover:bg-card-hover",
+        "rounded-xl border border-border bg-card",
+        elevated && "shadow-card",
+        hover && "transition-all duration-150 hover:border-border-hover hover:shadow-card",
         className
       )}
       {...props}
@@ -28,7 +30,7 @@ export function CardHeader({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("mb-4", className)} {...props}>
+    <div className={cn("px-5 py-4 border-b border-border", className)} {...props}>
       {children}
     </div>
   );
@@ -41,7 +43,7 @@ export function CardTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-lg font-semibold text-foreground", className)}
+      className={cn("text-base font-semibold text-foreground", className)}
       {...props}
     >
       {children}
@@ -56,7 +58,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-sm text-foreground-muted mt-1", className)}
+      className={cn("text-sm text-foreground-muted mt-0.5", className)}
       {...props}
     >
       {children}
@@ -70,7 +72,19 @@ export function CardContent({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("", className)} {...props}>
+    <div className={cn("p-5", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+export function CardFooter({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={cn("px-5 py-3 border-t border-border bg-background-secondary/50", className)} {...props}>
       {children}
     </div>
   );

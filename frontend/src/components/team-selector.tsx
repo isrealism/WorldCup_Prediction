@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, X } from "lucide-react";
 
 export interface Team {
   name: string;
@@ -107,7 +107,7 @@ export function TeamSelector({
   return (
     <div ref={containerRef} className={cn("relative", className)}>
       {label && (
-        <label className="mb-2 block text-sm font-medium text-foreground-muted">
+        <label className="mb-1.5 block text-xs font-medium text-foreground-muted uppercase tracking-wider">
           {label}
         </label>
       )}
@@ -115,55 +115,66 @@ export function TeamSelector({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-4 py-3 text-left transition-colors",
-          "hover:border-border-hover hover:bg-card-hover",
-          "focus:outline-none focus:ring-2 focus:ring-primary",
-          isOpen && "border-primary"
+          "flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-left transition-all duration-150",
+          "hover:border-border-hover",
+          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+          isOpen && "border-primary ring-2 ring-primary ring-offset-2"
         )}
       >
         {value ? (
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">{getFlagEmoji(value.code)}</span>
-            <span className="font-medium">{value.name}</span>
-            <span className={cn("text-xs", continentColors[value.continent])}>
-              {value.continent}
-            </span>
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl">{getFlagEmoji(value.code)}</span>
+            <span className="text-sm font-medium">{value.name}</span>
           </div>
         ) : (
-          <span className="text-foreground-muted">{placeholder}</span>
+          <span className="text-sm text-foreground-muted">{placeholder}</span>
         )}
-        <ChevronDown
-          className={cn(
-            "h-5 w-5 text-foreground-muted transition-transform",
-            isOpen && "rotate-180"
+        <div className="flex items-center gap-1">
+          {value && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange(null);
+              }}
+              className="rounded p-0.5 text-foreground-subtle hover:bg-background-secondary hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           )}
-        />
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-foreground-muted transition-transform",
+              isOpen && "rotate-180"
+            )}
+          />
+        </div>
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-80 overflow-hidden rounded-lg border border-border bg-card shadow-xl">
+        <div className="absolute left-0 right-0 top-full z-50 mt-1.5 max-h-72 overflow-hidden rounded-lg border border-border bg-card shadow-lg">
           {/* Search */}
           <div className="border-b border-border p-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-muted" />
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-foreground-muted" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search teams..."
-                className="w-full rounded-md border border-border bg-background-secondary py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary focus:outline-none"
+                className="w-full rounded-md border-0 bg-background-secondary py-1.5 pl-8 pr-3 text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none focus:ring-1 focus:ring-primary"
                 autoFocus
               />
             </div>
           </div>
 
           {/* Team list */}
-          <div className="max-h-60 overflow-y-auto p-2">
+          <div className="max-h-52 overflow-y-auto p-1.5">
             {Object.entries(groupedTeams).map(([continent, teams]) => (
-              <div key={continent} className="mb-2">
+              <div key={continent} className="mb-1.5 last:mb-0">
                 <div
                   className={cn(
-                    "mb-1 px-2 text-xs font-semibold uppercase tracking-wider",
+                    "mb-0.5 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider",
                     continentColors[continent]
                   )}
                 >
@@ -178,14 +189,14 @@ export function TeamSelector({
                       setSearch("");
                     }}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors",
-                      "hover:bg-background-tertiary",
+                      "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-colors",
+                      "hover:bg-background-secondary",
                       value?.code === team.code &&
                         "bg-primary-muted text-primary"
                     )}
                   >
-                    <span className="text-lg">{getFlagEmoji(team.code)}</span>
-                    <span className="text-sm font-medium">{team.name}</span>
+                    <span className="text-base">{getFlagEmoji(team.code)}</span>
+                    <span className="text-sm">{team.name}</span>
                   </button>
                 ))}
               </div>

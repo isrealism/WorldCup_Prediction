@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getFlagEmoji, continentColors, Team } from "@/lib/mock-data";
-import { ChevronDown, ChevronUp, Trophy, Medal } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
 
 export interface TeamProbabilities {
   team: Team;
@@ -32,31 +32,22 @@ export function ProbabilityRankings({
 
   const formatProb = (prob: number) => `${(prob * 100).toFixed(1)}%`;
 
-  const getProbColor = (prob: number) => {
-    if (prob >= 0.7) return "text-success";
-    if (prob >= 0.4) return "text-warning";
-    if (prob >= 0.1) return "text-foreground";
-    return "text-foreground-muted";
-  };
-
   return (
-    <div className={cn("rounded-xl border border-border bg-card overflow-hidden", className)}>
+    <div className={cn("overflow-hidden", className)}>
       {/* Table Header */}
-      <div className="grid grid-cols-8 gap-2 px-4 py-3 bg-background-secondary text-xs font-medium text-foreground-muted border-b border-border">
+      <div className="grid grid-cols-8 gap-2 px-5 py-2.5 bg-background-secondary text-[10px] font-medium text-foreground-muted uppercase tracking-wider border-b border-border">
         <div className="col-span-2">Team</div>
         <div className="text-center">Group</div>
         <div className="text-center">R16</div>
         <div className="text-center">QF</div>
         <div className="text-center">SF</div>
         <div className="text-center">Final</div>
-        <div className="text-center">
-          <Trophy className="h-4 w-4 mx-auto" />
-        </div>
+        <div className="text-center">Champ</div>
       </div>
 
       {/* Table Body */}
       <div className="divide-y divide-border">
-        {sortedTeams.map((teamData, index) => {
+        {sortedTeams.slice(0, 20).map((teamData, index) => {
           const isExpanded = expandedTeam === teamData.team.code;
           const colors = continentColors[teamData.team.continent];
 
@@ -67,66 +58,53 @@ export function ProbabilityRankings({
                 onClick={() =>
                   setExpandedTeam(isExpanded ? null : teamData.team.code)
                 }
-                className="w-full grid grid-cols-8 gap-2 px-4 py-3 items-center hover:bg-card-hover transition-colors text-left"
+                className="w-full grid grid-cols-8 gap-2 px-5 py-2.5 items-center hover:bg-background-secondary transition-colors text-left"
               >
                 {/* Team */}
-                <div className="col-span-2 flex items-center gap-3">
-                  <span className="w-6 text-sm text-foreground-muted font-medium">
+                <div className="col-span-2 flex items-center gap-2">
+                  <span className="w-4 text-xs text-foreground-muted font-medium tabular-nums">
                     {index + 1}
                   </span>
-                  <span className="text-xl">{getFlagEmoji(teamData.team.code)}</span>
-                  <div>
-                    <div className="font-medium text-sm truncate">
-                      {teamData.team.name}
-                    </div>
-                    <div className={cn("text-xs", colors?.text)}>
-                      {teamData.team.continent}
-                    </div>
-                  </div>
+                  <span className="text-lg">{getFlagEmoji(teamData.team.code)}</span>
+                  <span className="text-sm font-medium truncate">
+                    {teamData.team.name}
+                  </span>
                 </div>
 
                 {/* Probabilities */}
-                <div className={cn("text-center text-sm font-medium", getProbColor(teamData.groupStage))}>
+                <div className="text-center text-xs font-medium tabular-nums text-foreground-muted">
                   {formatProb(teamData.groupStage)}
                 </div>
-                <div className={cn("text-center text-sm font-medium", getProbColor(teamData.roundOf16))}>
+                <div className="text-center text-xs font-medium tabular-nums text-foreground-muted">
                   {formatProb(teamData.roundOf16)}
                 </div>
-                <div className={cn("text-center text-sm font-medium", getProbColor(teamData.quarterFinals))}>
+                <div className="text-center text-xs font-medium tabular-nums text-foreground-muted">
                   {formatProb(teamData.quarterFinals)}
                 </div>
-                <div className={cn("text-center text-sm font-medium", getProbColor(teamData.semiFinals))}>
+                <div className="text-center text-xs font-medium tabular-nums text-foreground-muted">
                   {formatProb(teamData.semiFinals)}
                 </div>
-                <div className={cn("text-center text-sm font-medium", getProbColor(teamData.finals))}>
+                <div className="text-center text-xs font-medium tabular-nums text-foreground-muted">
                   {formatProb(teamData.finals)}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <span className={cn("text-sm font-bold", index < 3 ? "text-primary" : getProbColor(teamData.champion))}>
+                  <span className={cn(
+                    "text-xs font-bold tabular-nums",
+                    index < 3 ? "text-primary" : "text-foreground"
+                  )}>
                     {formatProb(teamData.champion)}
                   </span>
-                  {index < 3 && <Medal className={cn("h-4 w-4", index === 0 ? "text-yellow-500" : index === 1 ? "text-gray-400" : "text-amber-600")} />}
                   {isExpanded ? (
-                    <ChevronUp className="h-4 w-4 text-foreground-muted ml-1" />
+                    <ChevronUp className="h-3.5 w-3.5 text-foreground-subtle" />
                   ) : (
-                    <ChevronDown className="h-4 w-4 text-foreground-muted ml-1" />
+                    <ChevronDown className="h-3.5 w-3.5 text-foreground-subtle" />
                   )}
                 </div>
               </button>
 
               {/* Expanded Details */}
               {isExpanded && (
-                <div className="px-4 py-4 bg-background-secondary border-t border-border">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-sm font-medium">Probability Journey</h4>
-                    <Link
-                      href={`/team/${teamData.team.name.toLowerCase()}`}
-                      className="text-xs text-primary hover:text-primary-hover transition-colors"
-                    >
-                      View Team Details
-                    </Link>
-                  </div>
-                  
+                <div className="px-5 py-3 bg-background-secondary border-t border-border">
                   {/* Visual probability flow */}
                   <div className="flex items-center gap-1">
                     {[
@@ -135,31 +113,40 @@ export function ProbabilityRankings({
                       { label: "QF", prob: teamData.quarterFinals },
                       { label: "SF", prob: teamData.semiFinals },
                       { label: "Final", prob: teamData.finals },
-                      { label: "Win", prob: teamData.champion },
+                      { label: "Champ", prob: teamData.champion },
                     ].map((stage, i, arr) => (
                       <div key={stage.label} className="flex-1 flex items-center">
                         <div className="flex-1">
                           <div
                             className={cn(
-                              "h-8 rounded-md flex items-center justify-center text-xs font-medium transition-all",
+                              "h-7 rounded-md flex items-center justify-center text-[10px] font-semibold",
                               stage.prob >= 0.5
-                                ? "bg-primary text-background"
+                                ? "bg-primary text-white"
                                 : stage.prob >= 0.2
-                                ? "bg-primary/50 text-foreground"
+                                ? "bg-primary/30 text-foreground"
                                 : "bg-background-tertiary text-foreground-muted"
                             )}
                           >
                             {formatProb(stage.prob)}
                           </div>
-                          <div className="text-xs text-center mt-1 text-foreground-muted">
+                          <div className="text-[10px] text-center mt-0.5 text-foreground-subtle">
                             {stage.label}
                           </div>
                         </div>
                         {i < arr.length - 1 && (
-                          <div className="w-4 h-px bg-border mx-1" />
+                          <div className="w-2 h-px bg-border mx-0.5" />
                         )}
                       </div>
                     ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-border flex justify-end">
+                    <Link
+                      href={`/team/${teamData.team.name.toLowerCase()}`}
+                      className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover"
+                    >
+                      View team
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
                   </div>
                 </div>
               )}

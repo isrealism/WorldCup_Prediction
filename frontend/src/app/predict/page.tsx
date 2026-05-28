@@ -11,7 +11,8 @@ import { KnockoutExtras } from "@/components/predict/knockout-extras";
 import { H2HSummary, generateMockH2HData } from "@/components/predict/h2h-summary";
 import { getFlagEmoji } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
-import { Target, Sparkles, BarChart3, History, Swords, Settings2 } from "lucide-react";
+import { Target, BarChart3, History, Swords, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 type MatchStage = "group" | "knockout" | "final";
 
@@ -53,7 +54,6 @@ function PredictContent() {
   // Generate prediction when both teams are selected
   useEffect(() => {
     if (homeTeam && awayTeam) {
-      // Mock prediction generation - would be API call in production
       const homeRandom = Math.random() * 0.3 + 0.35;
       const awayRandom = Math.random() * 0.25 + 0.15;
       const drawProb = 1 - homeRandom - awayRandom;
@@ -87,28 +87,11 @@ function PredictContent() {
     : null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-          <Target className="h-8 w-8 text-primary" />
-          Match Prediction
-        </h1>
-        <p className="mt-2 text-foreground-muted">
-          Select two teams to generate AI-powered match predictions
-        </p>
-      </div>
-
-      {/* Team Selection */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings2 className="h-5 w-5 text-primary" />
-            Match Setup
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end">
+    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
+      {/* Team Selection Card */}
+      <Card elevated className="mb-6">
+        <CardContent className="p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
             {/* Home Team */}
             <div className="flex-1">
               <TeamSelector
@@ -121,17 +104,16 @@ function PredictContent() {
             </div>
 
             {/* VS Separator */}
-            <div className="flex items-center justify-center py-4 lg:py-0 lg:px-8">
-              <div className="flex flex-col items-center gap-2">
-                <div className="text-4xl font-bold text-foreground-muted">VS</div>
-                {homeTeam && awayTeam && (
-                  <div className="flex items-center gap-2 text-3xl">
-                    <span>{getFlagEmoji(homeTeam.code)}</span>
-                    <Swords className="h-5 w-5 text-primary" />
-                    <span>{getFlagEmoji(awayTeam.code)}</span>
-                  </div>
-                )}
-              </div>
+            <div className="flex flex-col items-center justify-center py-2 lg:py-0 lg:px-6">
+              {homeTeam && awayTeam ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{getFlagEmoji(homeTeam.code)}</span>
+                  <span className="text-xs font-bold text-foreground-subtle uppercase tracking-wider">vs</span>
+                  <span className="text-2xl">{getFlagEmoji(awayTeam.code)}</span>
+                </div>
+              ) : (
+                <span className="text-xs font-bold text-foreground-subtle uppercase tracking-wider">vs</span>
+              )}
             </div>
 
             {/* Away Team */}
@@ -147,24 +129,24 @@ function PredictContent() {
           </div>
 
           {/* Match Stage Selector */}
-          <div className="mt-6 pt-6 border-t border-border">
-            <label className="block text-sm font-medium text-foreground-muted mb-3">
-              Match Stage
-            </label>
-            <div className="flex flex-wrap gap-2">
+          <div className="mt-4 pt-4 border-t border-border">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-foreground-muted uppercase tracking-wider mr-2">
+                Stage
+              </span>
               {[
-                { value: "group", label: "Group Stage" },
-                { value: "knockout", label: "Knockout Round" },
+                { value: "group", label: "Group" },
+                { value: "knockout", label: "Knockout" },
                 { value: "final", label: "Final" },
               ].map((stage) => (
                 <button
                   key={stage.value}
                   onClick={() => setMatchStage(stage.value as MatchStage)}
                   className={cn(
-                    "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                    "rounded-md px-3 py-1 text-xs font-medium transition-all",
                     matchStage === stage.value
-                      ? "bg-primary text-background"
-                      : "border border-border bg-card text-foreground-muted hover:bg-card-hover hover:text-foreground"
+                      ? "bg-primary text-white"
+                      : "bg-background-secondary text-foreground-muted hover:text-foreground"
                   )}
                 >
                   {stage.label}
@@ -177,61 +159,120 @@ function PredictContent() {
 
       {/* Prediction Results */}
       {showPrediction && homeTeam && awayTeam && (
-        <div className="space-y-8">
-          {/* Win Probability */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Result Probability
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-6">
+        <div className="space-y-6">
+          {/* Main Prediction Card */}
+          <Card elevated>
+            <CardContent className="p-0">
+              {/* Team Header */}
+              <div className="flex items-center justify-between p-5 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{getFlagEmoji(homeTeam.code)}</span>
+                  <div>
+                    <div className="font-semibold">{homeTeam.name}</div>
+                    <div className="text-xs text-foreground-muted">Home</div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-foreground-subtle uppercase tracking-wider mb-1">Predicted</div>
+                  <div className="text-2xl font-bold tabular-nums">
+                    {Math.round(prediction.lambdaHome)} - {Math.round(prediction.lambdaAway)}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <div className="font-semibold">{awayTeam.name}</div>
+                    <div className="text-xs text-foreground-muted">Away</div>
+                  </div>
+                  <span className="text-3xl">{getFlagEmoji(awayTeam.code)}</span>
+                </div>
+              </div>
+
+              {/* Probability Bar */}
+              <div className="p-5">
                 <ProbabilityBar
                   homeWin={prediction.homeWin}
                   draw={prediction.draw}
                   awayWin={prediction.awayWin}
-                  homeLabel={homeTeam.name}
-                  awayLabel={awayTeam.name}
+                  homeLabel={homeTeam.code}
+                  awayLabel={awayTeam.code}
                 />
               </div>
 
-              {/* Large probability display */}
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="rounded-xl border border-border bg-card p-6">
-                  <div className="text-sm text-foreground-muted mb-2">
-                    {homeTeam.name} Wins
+              {/* Probability Stats */}
+              <div className="grid grid-cols-3 border-t border-border">
+                <div className="p-4 text-center border-r border-border">
+                  <div className="text-2xl font-bold text-win">
+                    {(prediction.homeWin * 100).toFixed(0)}%
                   </div>
-                  <div className="text-4xl font-bold text-win">
-                    {(prediction.homeWin * 100).toFixed(1)}%
-                  </div>
+                  <div className="text-xs text-foreground-muted mt-0.5">{homeTeam.name} Win</div>
                 </div>
-                <div className="rounded-xl border border-border bg-card p-6">
-                  <div className="text-sm text-foreground-muted mb-2">Draw</div>
-                  <div className="text-4xl font-bold text-draw">
-                    {(prediction.draw * 100).toFixed(1)}%
+                <div className="p-4 text-center border-r border-border">
+                  <div className="text-2xl font-bold text-foreground-subtle">
+                    {(prediction.draw * 100).toFixed(0)}%
                   </div>
+                  <div className="text-xs text-foreground-muted mt-0.5">Draw</div>
                 </div>
-                <div className="rounded-xl border border-border bg-card p-6">
-                  <div className="text-sm text-foreground-muted mb-2">
-                    {awayTeam.name} Wins
+                <div className="p-4 text-center">
+                  <div className="text-2xl font-bold text-loss">
+                    {(prediction.awayWin * 100).toFixed(0)}%
                   </div>
-                  <div className="text-4xl font-bold text-loss">
-                    {(prediction.awayWin * 100).toFixed(1)}%
-                  </div>
+                  <div className="text-xs text-foreground-muted mt-0.5">{awayTeam.name} Win</div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Expected Goals & Score Matrix */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Expected Goals */}
+            <Card elevated>
+              <CardHeader className="flex flex-row items-center gap-2">
+                <Target className="h-4 w-4 text-primary" />
+                <CardTitle>Expected Goals</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 text-center">
+                    <div className="text-4xl font-bold text-foreground">{prediction.lambdaHome.toFixed(2)}</div>
+                    <div className="text-sm text-foreground-muted mt-1">{homeTeam.name}</div>
+                  </div>
+                  <div className="text-foreground-subtle">vs</div>
+                  <div className="flex-1 text-center">
+                    <div className="text-4xl font-bold text-foreground">{prediction.lambdaAway.toFixed(2)}</div>
+                    <div className="text-sm text-foreground-muted mt-1">{awayTeam.name}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Knockout Extras */}
+            {(matchStage === "knockout" || matchStage === "final") && (
+              <Card elevated>
+                <CardHeader className="flex flex-row items-center gap-2">
+                  <Swords className="h-4 w-4 text-primary" />
+                  <CardTitle>Knockout Scenario</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <KnockoutExtras
+                    extraTimeProb={prediction.extraTimeProb}
+                    penaltyProb={prediction.penaltyProb}
+                    homePenaltyWinRate={prediction.homePenaltyWinRate}
+                    awayPenaltyWinRate={prediction.awayPenaltyWinRate}
+                    homeTeam={homeTeam.name}
+                    awayTeam={awayTeam.name}
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
           {/* Score Matrix */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                Score Probability Matrix
-              </CardTitle>
+          <Card elevated>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                <CardTitle>Score Probability Matrix</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
               <ScoreMatrix
@@ -241,37 +282,13 @@ function PredictContent() {
             </CardContent>
           </Card>
 
-          {/* Knockout Extras - Only show for knockout/final stages */}
-          {(matchStage === "knockout" || matchStage === "final") && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Swords className="h-5 w-5 text-primary" />
-                  Knockout Stage Analysis
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <KnockoutExtras
-                  extraTimeProb={prediction.extraTimeProb}
-                  penaltyProb={prediction.penaltyProb}
-                  homePenaltyWinRate={prediction.homePenaltyWinRate}
-                  awayPenaltyWinRate={prediction.awayPenaltyWinRate}
-                  homeTeam={homeTeam.name}
-                  awayTeam={awayTeam.name}
-                />
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Two column layout for features and H2H */}
-          <div className="grid gap-8 lg:grid-cols-2">
+          {/* Features and H2H */}
+          <div className="grid gap-6 lg:grid-cols-2">
             {/* Feature Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  Key Prediction Features
-                </CardTitle>
+            <Card elevated>
+              <CardHeader className="flex flex-row items-center gap-2">
+                <Target className="h-4 w-4 text-primary" />
+                <CardTitle>Key Features</CardTitle>
               </CardHeader>
               <CardContent>
                 <FeatureBreakdown
@@ -284,12 +301,19 @@ function PredictContent() {
 
             {/* H2H Summary */}
             {h2hData && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <History className="h-5 w-5 text-primary" />
-                    Head-to-Head History
-                  </CardTitle>
+              <Card elevated>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <History className="h-4 w-4 text-primary" />
+                    <CardTitle>Head-to-Head</CardTitle>
+                  </div>
+                  <Link
+                    href={`/h2h?team1=${homeTeam.code}&team2=${awayTeam.code}`}
+                    className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover"
+                  >
+                    View all
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
                 </CardHeader>
                 <CardContent>
                   <H2HSummary
@@ -311,15 +335,15 @@ function PredictContent() {
       {/* Empty State */}
       {!showPrediction && (
         <Card className="border-dashed">
-          <CardContent className="py-16 text-center">
-            <Target className="h-12 w-12 mx-auto text-foreground-muted mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              Select Teams to Start
+          <CardContent className="py-12 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-background-secondary flex items-center justify-center mb-4">
+              <Target className="h-6 w-6 text-foreground-muted" />
+            </div>
+            <h3 className="text-base font-semibold mb-1">
+              Select teams to start
             </h3>
-            <p className="text-foreground-muted max-w-md mx-auto">
-              Choose a home and away team above to generate AI-powered match
-              predictions including win probabilities, expected goals, and score
-              matrix.
+            <p className="text-sm text-foreground-muted max-w-sm mx-auto">
+              Choose a home and away team to generate AI-powered match predictions
             </p>
           </CardContent>
         </Card>
@@ -331,11 +355,10 @@ function PredictContent() {
 export default function PredictPage() {
   return (
     <Suspense fallback={
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
-        <div className="animate-pulse">
-          <div className="h-10 w-64 bg-card rounded mb-4" />
-          <div className="h-6 w-96 bg-card rounded mb-8" />
-          <div className="h-64 bg-card rounded" />
+      <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-40 bg-background-secondary rounded-xl" />
+          <div className="h-64 bg-background-secondary rounded-xl" />
         </div>
       </div>
     }>

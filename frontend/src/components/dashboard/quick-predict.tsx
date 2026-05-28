@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TeamSelector, mockTeams, Team } from "@/components/team-selector";
 import { Button } from "@/components/ui/button";
 import { Target, ArrowRight } from "lucide-react";
@@ -19,18 +19,16 @@ export function QuickPredict() {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-card via-card to-primary/5">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-primary" />
-          Quick Predict
-        </CardTitle>
-        <CardDescription>
-          Select two teams to get instant match predictions
-        </CardDescription>
+    <Card elevated>
+      <CardHeader className="flex flex-row items-center gap-2 border-0 pb-0">
+        <Target className="h-4.5 w-4.5 text-primary" />
+        <CardTitle>Quick Predict</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+        <p className="text-sm text-foreground-muted mb-4">
+          Select two teams to get instant match predictions
+        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1">
             <TeamSelector
               label="Home Team"
@@ -41,10 +39,10 @@ export function QuickPredict() {
             />
           </div>
           
-          <div className="flex items-center justify-center py-2 lg:py-0">
-            <div className="rounded-lg bg-background-secondary px-4 py-2 text-sm font-bold text-foreground-muted">
-              VS
-            </div>
+          <div className="flex items-center justify-center py-1 sm:py-0 sm:pb-2.5">
+            <span className="text-xs font-bold text-foreground-subtle uppercase tracking-wider">
+              vs
+            </span>
           </div>
           
           <div className="flex-1">
@@ -60,8 +58,7 @@ export function QuickPredict() {
           <Button
             onClick={handlePredict}
             disabled={!homeTeam || !awayTeam}
-            size="lg"
-            className="w-full lg:w-auto"
+            className="w-full sm:w-auto"
           >
             Predict
             <ArrowRight className="h-4 w-4" />
