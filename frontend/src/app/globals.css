@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root {
+  /* Background colors */
+  --background: #0a0a0a;
+  --background-secondary: #111111;
+  --background-tertiary: #1a1a1a;
+  
+  /* Foreground/text colors */
+  --foreground: #ededed;
+  --foreground-muted: #a1a1a1;
+  --foreground-subtle: #666666;
+  
+  /* Primary accent - emerald/teal for sports analytics */
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-muted: rgba(16, 185, 129, 0.15);
+  
+  /* Status colors */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  
+  /* Continental colors for teams */
+  --europe: #3b82f6;
+  --south-america: #22c55e;
+  --asia: #f97316;
+  --africa: #a855f7;
+  --north-america: #06b6d4;
+  --oceania: #ec4899;
+  
+  /* Match result colors */
+  --win: #3b82f6;
+  --draw: #6b7280;
+  --loss: #ef4444;
+  
+  /* Border and card */
+  --border: #262626;
+  --border-hover: #404040;
+  --card: #141414;
+  --card-hover: #1f1f1f;
+  
+  /* Radius */
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-muted: var(--primary-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-europe: var(--europe);
+  --color-south-america: var(--south-america);
+  --color-asia: var(--asia);
+  --color-africa: var(--africa);
+  --color-north-america: var(--north-america);
+  --color-oceania: var(--oceania);
+  --color-win: var(--win);
+  --color-draw: var(--draw);
+  --color-loss: var(--loss);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
